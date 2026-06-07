@@ -1,0 +1,12 @@
+# Only count .dart and .go files
+*.dart linguist-detectable=true
+*.go linguist-detectable=true
+
+# Ignore native platform files for language statistics
+android/** linguist-vendored
+ios/** linguist-vendored
+macos/** linguist-vendored
+windows/** linguist-vendored
+linux/** linguist-vendored
+web/** linguist-vendored
+build/** linguist-generated
