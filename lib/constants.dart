@@ -20,6 +20,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 class Constants {
+  static const String dbURL = 'https://ivinjnnepudqjvemmxaw.supabase.co';
+  static const String dbKey = 'sb_publishable_pSSmUJyAMnvuevtFtjSn-Q_BrLWHWRV';
+  
   static const String morningGreeting = 'Good morning';
   static const String eveningGreeting = 'Good evening';
   static const String nightGreeting = 'Good night';

@@ -19,37 +19,32 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-import 'package:flutter/cupertino.dart';
-
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'services/config.dart';
-import 'screens/home_screen.dart';
+class Config {
+  static late String apiKey;
+  static late String topicPrompt;
+  static late String textPrompt;
 
-import 'constants.dart';
+  static Future<void> load() async {
+    try {
+      final response = await Supabase.instance.client.functions.invoke('smart-api', body: {'name': 'Functions'});
+      final data = response.data as Map<String, dynamic>;
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Supabase.initialize(
-    url: Constants.dbURL,
-    publishableKey: Constants.dbKey
-  );
-  await Config.load();
-  runApp(const FlashcardsApp());
-}
+      apiKey = data['apiKey'] as String? ?? '';
+      topicPrompt = data['topicPrompt'] as String? ?? '';
+      textPrompt = data['textPrompt'] as String? ?? '';
 
-class FlashcardsApp extends StatelessWidget {
-  const FlashcardsApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoApp(
-      debugShowCheckedModeBanner: false,
-      theme: CupertinoThemeData(
-        brightness: Brightness.dark,
-        primaryColor: CupertinoColors.activeBlue
-      ),
-      home: HomeScreen()
-    );
+      if (apiKey.isEmpty) throw Exception('apiKey missing');
+      if (topicPrompt.isEmpty) throw Exception('topicPrompt missing');
+      if (textPrompt.isEmpty) throw Exception('textPrompt missing');
+    }
+    catch (e) {
+      throw Exception('Failed to load configuration: $e');
+    }
   }
+
+  static String getTopicPrompt({required String topic, required int count}) => topicPrompt.replaceAll('{topic}', topic).replaceAll('{count}', count.toString());
+
+  static String getTextPrompt({required String text, required int count}) => textPrompt.replaceAll('{text}', text).replaceAll('{count}', count.toString());
 }

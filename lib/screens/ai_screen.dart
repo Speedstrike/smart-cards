@@ -22,7 +22,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
+import 'results_screen.dart';
+
 import '../constants.dart';
+import '../services/openrouter.dart';
 
 class AIScreen extends StatefulWidget {
   const AIScreen({super.key});
@@ -35,6 +38,8 @@ class _AIScreenState extends State<AIScreen> {
   final TextEditingController _topicController = TextEditingController();
   final TextEditingController _countController = TextEditingController();
   bool _isValid = false;
+  bool _isLoading = false;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -61,6 +66,43 @@ class _AIScreenState extends State<AIScreen> {
     super.dispose();
   }
 
+  Future<void> _generateFlashcards() async {
+    if (!_isValid) return;
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final topic = _topicController.text.trim();
+      final count = int.parse(_countController.text);
+
+      final flashcards = await OpenRouter.generateFlashcards(
+        topic: topic,
+        count: count,
+      );
+
+      if (mounted) {
+        Navigator.of(context).push(
+          CupertinoPageRoute(
+            builder: (context) => ResultsScreen(flashcards: flashcards, title: topic)
+          )
+        );
+      }
+    }
+    catch (e) {
+      setState(() {
+        _errorMessage = e.toString().replaceFirst('Exception: ', '');
+      });
+    }
+    finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -69,7 +111,7 @@ class _AIScreenState extends State<AIScreen> {
         backgroundColor: CupertinoColors.systemGrey6,
         leading: CupertinoButton(
           padding: EdgeInsets.zero,
-          child: Icon(
+          child: const Icon(
             CupertinoIcons.back,
             color: CupertinoColors.activeBlue,
             size: 40
@@ -91,16 +133,16 @@ class _AIScreenState extends State<AIScreen> {
                 children: [
                   Text(
                     Constants.aiTitle,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                       color: CupertinoColors.activeBlue
                     )
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     Constants.aiInstructions,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 20,
                       color: CupertinoColors.systemBackground
                     )
@@ -114,25 +156,25 @@ class _AIScreenState extends State<AIScreen> {
                     CupertinoTextField(
                       controller: _topicController,
                       placeholder: Constants.aiTopicPlaceholder,
-                      placeholderStyle: TextStyle(
+                      placeholderStyle: const TextStyle(
                         color: CupertinoColors.inactiveGray
                       ),
-                      style: TextStyle(color: CupertinoColors.white),
-                      padding: EdgeInsets.all(12),
+                      style: const TextStyle(color: CupertinoColors.white),
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: const Color(0xFF333333),
                         borderRadius: BorderRadius.circular(8)
                       )
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
                     CupertinoTextField(
                       controller: _countController,
                       placeholder: Constants.aiCountPlaceholder,
-                      placeholderStyle: TextStyle(
+                      placeholderStyle: const TextStyle(
                         color: CupertinoColors.inactiveGray
                       ),
-                      style: TextStyle(color: CupertinoColors.white),
-                      padding: EdgeInsets.all(12),
+                      style: const TextStyle(color: CupertinoColors.white),
+                      padding: const EdgeInsets.all(12),
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       decoration: BoxDecoration(
@@ -140,11 +182,33 @@ class _AIScreenState extends State<AIScreen> {
                         borderRadius: BorderRadius.circular(8)
                       )
                     ),
-                    if (_isValid) ...[
-                      SizedBox(height: 16),
+                    if (_errorMessage != null) ...[
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: CupertinoColors.systemRed.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: CupertinoColors.systemRed)
+                        ),
+                        child: Text(
+                          _errorMessage!,
+                          style: const TextStyle(
+                            color: CupertinoColors.systemRed,
+                            fontSize: 14
+                          )
+                        )
+                      )
+                    ],
+                    if (_isLoading) ...[
+                      const SizedBox(height: 16),
+                      const CupertinoActivityIndicator(radius: 16)
+                    ]
+                    else if (_isValid) ...[
+                      const SizedBox(height: 16),
                       CupertinoButton.filled(
-                        child: Text(Constants.continueButtonText),
-                        onPressed: () {}
+                        onPressed: _generateFlashcards,
+                        child: Text(Constants.continueButtonText)
                       )
                     ]
                   ]

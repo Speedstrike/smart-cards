@@ -21,7 +21,7 @@
 // SOFTWARE.
 import 'package:flutter/cupertino.dart';
 
-import 'package:smart_cards/frontend/screens/create_screen.dart';
+import 'screens/create_screen.dart';
 
 class GradientButton extends StatefulWidget {
   final IconData icon;
@@ -34,7 +34,7 @@ class GradientButton extends StatefulWidget {
     required this.icon,
     required this.title,
     required this.description,
-    required this.onTap,
+    required this.onTap
   });
 
   @override
@@ -60,10 +60,7 @@ class GradientButtonState extends State<GradientButton> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           gradient: LinearGradient(
-            colors: [
-              CupertinoColors.activeBlue,
-              CupertinoColors.systemPurple,
-            ],
+            colors: [CupertinoColors.activeBlue, CupertinoColors.systemPurple],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight
           ),

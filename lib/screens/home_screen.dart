@@ -22,11 +22,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'create_screen.dart';
+
 import '../constants.dart';
 import '../flashcard_deck.dart';
 import '../flashcard_tile.dart';
-
-import 'create_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final List<FlashcardDeck> decks = [];

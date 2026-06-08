@@ -25,7 +25,10 @@ import 'package:image_picker/image_picker.dart';
 
 import 'dart:io';
 
+import 'results_screen.dart';
+
 import '../constants.dart';
+import '../services/openrouter.dart';
 
 class ScanScreen extends StatefulWidget {
   const ScanScreen({super.key});
@@ -35,8 +38,9 @@ class ScanScreen extends StatefulWidget {
 }
 
 class _ScanScreenState extends State<ScanScreen> {
-  String? _fileName;
   File? _scannedImage;
+  bool _isLoading = false;
+  String? _errorMessage;
 
   Future<void> _scanImage() async {
     final picker = ImagePicker();
@@ -44,7 +48,41 @@ class _ScanScreenState extends State<ScanScreen> {
     if (pickedFile != null) {
       setState(() {
         _scannedImage = File(pickedFile.path);
+        _errorMessage = null;
       });
+    }
+  }
+
+  Future<void> _processImage() async {
+    if (_scannedImage == null) return;
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      const placeholderText = 'Please ensure the image contains text or notes to convert to flashcards.';
+
+      final flashcards = await OpenRouter.processText(text: placeholderText, count: 5);
+
+      if (mounted) {
+        Navigator.of(context).push(
+          CupertinoPageRoute(
+            builder: (context) => ResultsScreen(flashcards: flashcards, title: 'From Scan')
+          )
+        );
+      }
+    }
+    catch (e) {
+      setState(() {
+        _errorMessage = e.toString().replaceFirst('Exception: ', '');
+      });
+    }
+    finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -56,7 +94,7 @@ class _ScanScreenState extends State<ScanScreen> {
         backgroundColor: CupertinoColors.systemGrey6,
         leading: CupertinoButton(
           padding: EdgeInsets.zero,
-          child: Icon(
+          child: const Icon(
             CupertinoIcons.back,
             color: CupertinoColors.activeBlue,
             size: 40
@@ -78,52 +116,60 @@ class _ScanScreenState extends State<ScanScreen> {
                 children: [
                   Text(
                     Constants.scanTitle,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                       color: CupertinoColors.activeBlue
                     )
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     Constants.scanInstructions,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 20,
                       color: CupertinoColors.systemBackground
                     )
                   ),
-                  SizedBox(height: 175),
+                  const SizedBox(height: 175),
                   Center(
                     child: Column(
                       children: [
                         CupertinoButton(
                           padding: EdgeInsets.zero,
-                          onPressed: _scanImage,
+                          onPressed: _isLoading ? null : _scanImage,
                           child: Icon(
                             CupertinoIcons.camera_on_rectangle,
                             size: 100,
-                            color: CupertinoColors.systemTeal
+                            color: _isLoading? CupertinoColors.systemGrey : CupertinoColors.systemTeal
                           )
                         ),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         Text(
                           Constants.scanTitle,
                           style: TextStyle(
                             fontSize: 18,
-                            color: CupertinoColors.systemTeal,
+                            color: _isLoading? CupertinoColors.systemGrey : CupertinoColors.systemTeal,
                             fontWeight: FontWeight.w500
                           )
                         ),
-                        if (_fileName != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: Text('Selected file: $_fileName')
-                          ),
-                        if (_scannedImage != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 16),
-                            child: Image.file(_scannedImage!)
-                          ),
+                        if (_errorMessage != null) ...[
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: CupertinoColors.systemRed.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: CupertinoColors.systemRed)
+                            ),
+                            child: Text(
+                              _errorMessage!,
+                              style: const TextStyle(
+                                color: CupertinoColors.systemRed,
+                                fontSize: 14
+                              )
+                            )
+                          )
+                        ],
                         if (_scannedImage != null) ...[
                           Padding(
                             padding: const EdgeInsets.only(top: 16),
@@ -136,11 +182,14 @@ class _ScanScreenState extends State<ScanScreen> {
                               )
                             )
                           ),
-                          SizedBox(height: 100),
-                          CupertinoButton.filled(
-                            child: Text(Constants.continueButtonText),
-                            onPressed: () {}
-                          )
+                          const SizedBox(height: 100),
+                          if (_isLoading)
+                            const CupertinoActivityIndicator(radius: 16)
+                          else
+                            CupertinoButton.filled(
+                              onPressed: _processImage,
+                              child: Text(Constants.continueButtonText)
+                            )
                         ]
                       ]
                     )
