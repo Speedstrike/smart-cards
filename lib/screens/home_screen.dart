@@ -23,6 +23,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'create_screen.dart';
+import 'account_screen.dart';
 
 import '../constants.dart';
 import '../flashcard_deck.dart';
@@ -56,13 +57,36 @@ class HomeScreen extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.all(20),
               children: [
-                Text(
-                  getGreeting(),
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: CupertinoColors.activeBlue
-                  )
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        getGreeting(),
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                          color: CupertinoColors.activeBlue
+                        )
+                      )
+                    ),
+                    CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          CupertinoPageRoute(
+                            builder: (context) => const AccountScreen()
+                          )
+                        );
+                      },
+                      child: const Icon(
+                        CupertinoIcons.person_circle,
+                        color: CupertinoColors.systemGrey,
+                        size: 28
+                      )
+                    )
+                  ]
                 ),
                 SizedBox(height: 50),
                 Text(

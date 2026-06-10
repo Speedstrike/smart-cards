@@ -19,6 +19,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+import 'package:flutter/cupertino.dart';
+
 class Constants {
   static const String dbURL = 'https://ivinjnnepudqjvemmxaw.supabase.co';
   static const String dbKey = 'sb_publishable_pSSmUJyAMnvuevtFtjSn-Q_BrLWHWRV';
@@ -48,4 +50,51 @@ class Constants {
   static const String aiCountPlaceholder = 'Number of flashcards';
 
   static const String continueButtonText = 'Generate flashcards';
+
+  static const String accountCreateTitle = 'Create Account';
+  static const String accountWelcomeTitle = 'Welcome Back';
+  static const String accountSettingsTitle = 'Account Settings';
+  static const String accountCreateSubtitle = 'Start studying smarter today.';
+  static const String accountWelcomeSubtitle = 'Sign in to access your profile.';
+  static const String accountDeleteDialogTitle = 'Delete Account';
+  static const String accountDeleteDialogContent = 'This permanently deletes your account and all saved decks. This cannot be undone.';
+  static const String accountDeleteButtonText = 'Delete';
+  static const String accountCancelButtonText = 'Cancel';
+  static const String accountPlaceholderEmail = 'Email Address';
+  static const String accountPlaceholderPassword = 'Password';
+  static const String accountPlaceholderNewEmail = 'New email address';
+  static const String accountPlaceholderNewPassword = 'New password';
+  static const String accountPlaceholderConfirmPassword = 'Confirm new password';
+  static const String accountButtonSignUp = 'Create Account';
+  static const String accountButtonSignIn = 'Sign In';
+  static const String accountButtonToggleToSignIn = 'Already have an account? Sign In';
+  static const String accountButtonToggleToSignUp = 'New here? Create an Account';
+  static const String accountForgotPassword = 'Forgot password?';
+  static const String accountRowChangeEmail = 'Change Email';
+  static const String accountRowChangePassword = 'Change Password';
+  static const String accountRowSignOut = 'Sign Out';
+  static const String accountRowDeleteAccount = 'Delete Account';
+  static const String accountButtonUpdateEmail = 'Update Email';
+  static const String accountButtonUpdatePassword = 'Update Password';
+  static const String accountButtonBack = 'Back';
+  
+  static const String errorEmptyCredentials = 'Please enter your email and password.';
+  static const String errorGeneric = 'Something went wrong. Please try again.';
+  static const String errorEmptyEmailReset = 'Enter your email address first.';
+  static const String errorEmptyNewEmail = 'Enter a new email address.';
+  static const String errorEmptyPasswordFields = 'Please fill in both fields.';
+  static const String errorPasswordMismatch = 'Passwords do not match.';
+  static const String errorPasswordLength = 'Password must be at least 6 characters.';
+  static const String errorDeleteAccount = 'Could not delete account. Please try again.';
+  
+  static const String successAccountCreated = 'Account created!';
+  static const String successConfirmEmail = 'Check your email to confirm your account.';
+  static const String successWelcomeBack = 'Welcome back!';
+  static const String successPasswordResetSent = 'Password reset email sent.';
+  static const String successPasswordUpdated = 'Password updated successfully.';
+  
+  static const Color background = Color(0xFF1C1C1E);
+  static const Color cardBackground = Color(0xFF2C2C2E);
+  static const Color cardSubBackground = Color(0xFF222224);
+  static const Color border = Color(0xFF3A3A3C);
 }
