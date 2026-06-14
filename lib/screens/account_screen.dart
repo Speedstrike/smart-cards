@@ -254,7 +254,7 @@ class _AccountScreenState extends State<AccountScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: destructive? CupertinoColors.systemRed.withOpacity(0.1) : CupertinoColors.activeBlue.withOpacity(0.1),
+                color: destructive? CupertinoColors.systemRed.withValues(alpha: 0.1) : CupertinoColors.activeBlue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8)
               ),
               child: Icon(
@@ -328,9 +328,9 @@ class _AccountScreenState extends State<AccountScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: baseColor.withOpacity(0.08),
+        color: baseColor.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: baseColor.withOpacity(0.3), width: 1)
+        border: Border.all(color: baseColor.withValues(alpha: 0.3), width: 1)
       ),
       child: Row(
         children: [
@@ -357,7 +357,7 @@ class _AccountScreenState extends State<AccountScreen> {
     return CupertinoPageScaffold(
       backgroundColor: Constants.background,
       navigationBar: CupertinoNavigationBar(
-        backgroundColor: Constants.background.withOpacity(0.8),
+        backgroundColor: Constants.background.withValues(alpha: 0.8),
         border: null,
         leading: CupertinoButton(
           padding: EdgeInsets.zero,

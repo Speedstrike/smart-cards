@@ -162,7 +162,7 @@ class _AIScreenState extends State<AIScreen> {
                       style: const TextStyle(color: CupertinoColors.white),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF333333),
+                        color: Constants.inputBackground,
                         borderRadius: BorderRadius.circular(8)
                       )
                     ),
@@ -178,7 +178,7 @@ class _AIScreenState extends State<AIScreen> {
                       keyboardType: TextInputType.number,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       decoration: BoxDecoration(
-                        color: const Color(0xFF333333),
+                        color: Constants.inputBackground,
                         borderRadius: BorderRadius.circular(8)
                       )
                     ),
@@ -187,7 +187,7 @@ class _AIScreenState extends State<AIScreen> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: CupertinoColors.systemRed.withOpacity(0.1),
+                          color: CupertinoColors.systemRed.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: CupertinoColors.systemRed)
                         ),

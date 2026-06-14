@@ -163,7 +163,7 @@ class _UploadScreenState extends State<UploadScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: CupertinoColors.systemRed.withOpacity(0.1),
+                              color: CupertinoColors.systemRed.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(color: CupertinoColors.systemRed)
                             ),

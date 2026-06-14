@@ -102,4 +102,9 @@ class Constants {
   static const Color cardBackground = Color(0xFF2C2C2E);
   static const Color cardSubBackground = Color(0xFF222224);
   static const Color border = Color(0xFF3A3A3C);
+  static const Color inputBackground = Color(0xFF333333);
+  static const Color deckGradientStart = Color(0xFFFFE500);
+  static const Color deckGradientEnd = Color(0xFF00FF00);
+  static const Color deckTitleText = Color(0xFF1A2E00);
+  static const Color deckSubtitleText = Color(0xFF3A5200);
 }

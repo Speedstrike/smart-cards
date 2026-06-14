@@ -22,6 +22,7 @@
 import 'package:flutter/cupertino.dart';
 
 import 'flashcard_deck.dart';
+import 'constants.dart';
 
 class FlashcardTile extends StatelessWidget {
   final FlashcardDeck deck;
@@ -42,14 +43,14 @@ class FlashcardTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFFFFE500), Color(0xFF00FF00)],
+            colors: [Constants.deckGradientStart, Constants.deckGradientEnd],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight
           ),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFFFE500).withOpacity(0.3),
+              color: Constants.deckGradientStart.withValues(alpha: 0.3),
               blurRadius: 8,
               offset: const Offset(0, 4)
             )
@@ -67,7 +68,7 @@ class FlashcardTile extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1A2E00)
+                      color: Constants.deckTitleText
                     )
                   ),
                   const SizedBox(height: 4),
@@ -75,7 +76,7 @@ class FlashcardTile extends StatelessWidget {
                     '${deck.cardCount} cards',
                     style: const TextStyle(
                       fontSize: 13,
-                      color: Color(0xFF3A5200)
+                      color: Constants.deckSubtitleText
                     )
                   )
                 ]
@@ -83,7 +84,7 @@ class FlashcardTile extends StatelessWidget {
             ),
             const Icon(
               CupertinoIcons.chevron_right,
-              color: Color(0xFF3A5200),
+              color: Constants.deckSubtitleText,
               size: 18
             )
           ]

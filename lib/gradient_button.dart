@@ -66,7 +66,7 @@ class GradientButtonState extends State<GradientButton> {
           ),
           boxShadow: [
             BoxShadow(
-              color: CupertinoColors.systemGrey.withOpacity(0.2),
+              color: CupertinoColors.systemGrey.withValues(alpha: 0.2),
               blurRadius: 8,
               offset: Offset(0, 4)
             )

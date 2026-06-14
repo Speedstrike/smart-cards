@@ -98,22 +98,20 @@ class _FlashcardViewState extends State<FlashcardView> with SingleTickerProvider
               child: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: isBack
-                        ? [
-                            CupertinoColors.systemOrange,
-                            CupertinoColors.systemPink
-                          ]
-                        : [
-                            CupertinoColors.activeBlue,
-                            CupertinoColors.systemPurple
-                          ],
+                    colors: isBack? [
+                      CupertinoColors.systemOrange, 
+                      CupertinoColors.systemPink
+                    ] : [
+                      CupertinoColors.activeBlue,
+                      CupertinoColors.systemPurple
+                    ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight
                   ),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: CupertinoColors.systemGrey.withOpacity(0.2),
+                      color: CupertinoColors.systemGrey.withValues(alpha: 0.2),
                       blurRadius: 8,
                       offset: const Offset(0, 4)
                     )
