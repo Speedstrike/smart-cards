@@ -19,18 +19,21 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-import 'package:flutter/cupertino.dart';
 
 class FlashcardDeck {
+  final String id;
   final String title;
-  final String subtitle;
-  final IconData icon;
-  final Gradient color;
+  final int cardCount;
 
-  FlashcardDeck({
+  const FlashcardDeck({
+    required this.id,
     required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.color
+    required this.cardCount
   });
+
+  factory FlashcardDeck.fromMap(Map<String, dynamic> map) => FlashcardDeck(
+    id: map['id'] as String,
+    title: map['title'] as String,
+    cardCount: map['card_count'] as int
+  );
 }

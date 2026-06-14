@@ -26,6 +26,7 @@ class Constants {
   static const String dbKey = 'sb_publishable_pSSmUJyAMnvuevtFtjSn-Q_BrLWHWRV';
   
   static const String morningGreeting = 'Good morning';
+  static const String afternoonGreeting = 'Good afternoon';
   static const String eveningGreeting = 'Good evening';
   static const String nightGreeting = 'Good night';
 
@@ -92,6 +93,10 @@ class Constants {
   static const String successWelcomeBack = 'Welcome back!';
   static const String successPasswordResetSent = 'Password reset email sent.';
   static const String successPasswordUpdated = 'Password updated successfully.';
+
+  static const String saveConfirmationText = 'OK';
+  static const String saveErrorMessage = 'Failed to save';
+  static const String saveErrorExplanationText = 'Create an account to save your created decks!';
   
   static const Color background = Color(0xFF1C1C1E);
   static const Color cardBackground = Color(0xFF2C2C2E);

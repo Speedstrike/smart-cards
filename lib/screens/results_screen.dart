@@ -21,8 +21,11 @@
 // SOFTWARE.
 import 'package:flutter/cupertino.dart';
 
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'dart:math';
 
+import '../constants.dart';
 import '../services/openrouter.dart';
 
 class FlashcardView extends StatefulWidget {
@@ -162,11 +165,13 @@ class _FlashcardViewState extends State<FlashcardView> with SingleTickerProvider
 class ResultsScreen extends StatefulWidget {
   final List<Flashcard> flashcards;
   final String title;
+  final bool readOnly;
 
   const ResultsScreen({
     super.key,
     required this.flashcards,
-    required this.title
+    required this.title,
+    this.readOnly = false
   });
 
   @override
@@ -176,6 +181,7 @@ class ResultsScreen extends StatefulWidget {
 class _ResultsScreenState extends State<ResultsScreen> {
   late PageController _pageController;
   int _currentIndex = 0;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -187,6 +193,90 @@ class _ResultsScreenState extends State<ResultsScreen> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  Future<void> _saveDeck() async {
+    setState(() => _isSaving = true);
+    final client = Supabase.instance.client;
+    final userId = client.auth.currentUser?.id;
+    if (userId == null) {
+      if (!mounted) return;
+      showCupertinoDialog(
+        context: context,
+        builder: (ctx) => CupertinoAlertDialog(
+          title: const Text('Failed to Save'),
+          content: const Text(Constants.saveErrorExplanationText),
+          actions: [
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('OK')
+            )
+          ]
+        )
+      );
+      setState(() => _isSaving = false);
+      return;
+    }
+    try {
+      final deck = await client
+        .from('decks')
+        .insert({
+          'user_id': userId,
+          'title': widget.title,
+          'card_count': widget.flashcards.length
+        }).select().single();
+
+      await client
+        .from('flashcards')
+        .insert(
+          widget.flashcards.map((f) => {
+            'deck_id': deck['id'],
+            'user_id': userId,
+            'question': f.question,
+            'answer': f.answer
+          }).toList(),
+        );
+
+      if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
+    }
+    on AuthException catch (e) {
+      if (!mounted) return;
+      showCupertinoDialog(
+        context: context,
+        builder: (ctx) => CupertinoAlertDialog(
+          title: const Text('Failed to Save'),
+          content: Text(e.message),
+          actions: [
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('OK')
+            )
+          ]
+        )
+      );
+    }
+    catch (e) {
+      if (!mounted) return;
+      showCupertinoDialog(
+        context: context,
+        builder: (ctx) => CupertinoAlertDialog(
+          title: const Text('Failed to Save'),
+          content: Text(e.toString()),
+          actions: [
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('OK')
+            )
+          ]
+        )
+      );
+    }
+    finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   @override
@@ -254,7 +344,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CupertinoButton(
-                    onPressed: _currentIndex > 0 ? () {
+                    onPressed: _currentIndex > 0? () {
                       _pageController.previousPage(
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.easeInOut
@@ -281,24 +371,23 @@ class _ResultsScreenState extends State<ResultsScreen> {
                     )
                   ),
                   CupertinoButton(
-                    onPressed: _currentIndex < widget.flashcards.length - 1 ? () {
-                      _pageController.nextPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut
-                      );
+                    onPressed: _currentIndex < widget.flashcards.length - 1? () {
+                       _pageController.nextPage(
+                         duration: const Duration(milliseconds: 300),
+                         curve: Curves.easeInOut
+                       );
                     } : null,
                     child: const Text('Next')
                   )
                 ]
               ),
-              const SizedBox(height: 12),
-              CupertinoButton.filled(
-                child: const Text('Save Deck'),
-                onPressed: () {
-                  // TODO
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                }
-              )
+              if (!widget.readOnly) ...[
+                const SizedBox(height: 12),
+                CupertinoButton.filled(
+                  onPressed: _isSaving ? null : _saveDeck,
+                  child: _isSaving? const CupertinoActivityIndicator(color: CupertinoColors.white) : const Text('Save Deck')
+                )
+              ]
             ]
           )
         )

@@ -19,38 +19,76 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'flashcard_deck.dart';
 
 class FlashcardTile extends StatelessWidget {
   final FlashcardDeck deck;
+  final VoidCallback? onTap;
 
-  const FlashcardTile({super.key, required this.deck});
+  const FlashcardTile({
+    super.key,
+    required this.deck,
+    this.onTap
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        margin: EdgeInsets.only(bottom: 16),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         decoration: BoxDecoration(
-          gradient: deck.color,
-          borderRadius: BorderRadius.circular(16)
+          gradient: const LinearGradient(
+            colors: [Color(0xFFFFE500), Color(0xFF00FF00)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight
+          ),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFFFFE500).withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 4)
+            )
+          ]
         ),
-        child: ListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            leading: Icon(deck.icon, color: Colors.white, size: 30),
-            title: Text(
-                deck.title,
-                style: TextStyle(fontSize: 16, color: Colors.white)
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    deck.title,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1A2E00)
+                    )
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${deck.cardCount} cards',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Color(0xFF3A5200)
+                    )
+                  )
+                ]
+              )
             ),
-            subtitle: Text(
-                deck.subtitle,
-                style: TextStyle(fontSize: 13, color: Colors.white70)
-            ),
-            onTap: () {
-              // TODO
-            }
+            const Icon(
+              CupertinoIcons.chevron_right,
+              color: Color(0xFF3A5200),
+              size: 18
+            )
+          ]
         )
+      )
     );
   }
 }

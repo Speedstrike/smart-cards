@@ -5,10 +5,10 @@ import FlutterMacOS
 class AppDelegate: FlutterAppDelegate {
   override func applicationDidFinishLaunching(_ notification: Notification) {
     if let window = NSApplication.shared.windows.first {
-      let targetSize = NSSize(width: 1200, height: 800)
+      let targetSize = NSSize(width: 600, height: 800)
       window.setContentSize(targetSize)
       window.center()
-      window.minSize = NSSize(width: 800, height: 600)
+      window.minSize = NSSize(width: 600, height: 800)
     }
 
     super.applicationDidFinishLaunching(notification)
