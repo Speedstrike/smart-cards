@@ -22,6 +22,7 @@
 import 'package:flutter/cupertino.dart';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 import 'dart:io';
 
@@ -44,7 +45,10 @@ class _UploadScreenState extends State<UploadScreen> {
   String? _errorMessage;
 
   Future<void> _pickFiles() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
+    FilePickerResult? result = await FilePicker.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: Constants.allowedFileExtensions
+    );
 
     if (result != null && result.files.isNotEmpty) {
       setState(() {
@@ -63,7 +67,17 @@ class _UploadScreenState extends State<UploadScreen> {
     });
 
     try {
-      final contents = await _selectedFile!.readAsString();
+      String contents = '';
+      
+      if (_fileName!.toLowerCase().endsWith('.pdf')) {
+        final PdfDocument document = PdfDocument(inputBytes: await _selectedFile!.readAsBytes());
+        contents = PdfTextExtractor(document).extractText();
+        document.dispose();
+      }
+      else {
+        contents = await _selectedFile!.readAsString();
+      }
+  
       final flashcards = await OpenRouter.processText(
         text: contents,
         count: 10

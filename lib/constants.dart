@@ -97,6 +97,8 @@ class Constants {
   static const String saveConfirmationText = 'OK';
   static const String saveErrorMessage = 'Failed to save';
   static const String saveErrorExplanationText = 'Create an account to save your created decks!';
+
+  static const List<String> allowedFileExtensions = ['pdf', 'png', 'jpg', 'jpeg', 'heic', 'txt', 'dat'];
   
   static const Color background = Color(0xFF1C1C1E);
   static const Color cardBackground = Color(0xFF2C2C2E);
