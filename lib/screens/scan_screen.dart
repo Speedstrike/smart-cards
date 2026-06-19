@@ -20,6 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 
 import 'package:image_picker/image_picker.dart';
 
@@ -41,6 +42,18 @@ class _ScanScreenState extends State<ScanScreen> {
   File? _scannedImage;
   bool _isLoading = false;
   String? _errorMessage;
+  final TextEditingController _countController = TextEditingController();
+
+  bool get _isCountValid {
+    final count = int.tryParse(_countController.text);
+    return count != null && count > 0;
+  }
+
+  @override
+  void dispose() {
+    _countController.dispose();
+    super.dispose();
+  }
 
   Future<void> _scanImage() async {
     final picker = ImagePicker();
@@ -54,7 +67,7 @@ class _ScanScreenState extends State<ScanScreen> {
   }
 
   Future<void> _processImage() async {
-    if (_scannedImage == null) return;
+    if (_scannedImage == null || !_isCountValid) return;
 
     setState(() {
       _isLoading = true;
@@ -64,7 +77,7 @@ class _ScanScreenState extends State<ScanScreen> {
     try {
       const placeholderText = 'Please ensure the image contains text or notes to convert to flashcards.';
 
-      final flashcards = await OpenRouter.processText(text: placeholderText, count: 5);
+      final flashcards = await OpenRouter.processText(text: placeholderText, count: int.parse(_countController.text));
 
       if (mounted) {
         Navigator.of(context).push(
@@ -182,10 +195,27 @@ class _ScanScreenState extends State<ScanScreen> {
                               )
                             )
                           ),
-                          const SizedBox(height: 100),
+                          const SizedBox(height: 20),
+                          CupertinoTextField(
+                            controller: _countController,
+                            placeholder: Constants.flashcardCountPlaceholder,
+                            placeholderStyle: const TextStyle(
+                              color: CupertinoColors.inactiveGray
+                            ),
+                            style: const TextStyle(color: CupertinoColors.white),
+                            padding: const EdgeInsets.all(12),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            decoration: BoxDecoration(
+                              color: Constants.inputBackground,
+                              borderRadius: BorderRadius.circular(8)
+                            ),
+                            onChanged: (_) => setState(() {})
+                          ),
+                          const SizedBox(height: 80),
                           if (_isLoading)
                             const CupertinoActivityIndicator(radius: 16)
-                          else
+                          else if (_isCountValid)
                             CupertinoButton.filled(
                               onPressed: _processImage,
                               child: Text(Constants.continueButtonText)

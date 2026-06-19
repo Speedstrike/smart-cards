@@ -48,8 +48,8 @@ class Constants {
   static const String aiInstructions = 'Enter a topic and number of flashcards to generate a deck using AI';
 
   static const String aiTopicPlaceholder = 'Flashcard topic';
-  static const String aiCountPlaceholder = 'Number of flashcards';
 
+  static const String flashcardCountPlaceholder = 'Number of flashcards';
   static const String continueButtonText = 'Generate flashcards';
 
   static const String accountCreateTitle = 'Create Account';

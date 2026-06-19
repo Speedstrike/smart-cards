@@ -169,7 +169,7 @@ class _AIScreenState extends State<AIScreen> {
                     const SizedBox(height: 12),
                     CupertinoTextField(
                       controller: _countController,
-                      placeholder: Constants.aiCountPlaceholder,
+                      placeholder: Constants.flashcardCountPlaceholder,
                       placeholderStyle: const TextStyle(
                         color: CupertinoColors.inactiveGray
                       ),
