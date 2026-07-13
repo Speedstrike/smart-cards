@@ -9,6 +9,7 @@ A Flutter app that generates AI-powered flashcards from a topic or a block of te
 - Flip card animations with question/answer reveal
 - Swipeable card deck with page navigation
 - Save decks for later review
+- Share decks and export flashcards as CSV
 
 ## Tech Stack
 

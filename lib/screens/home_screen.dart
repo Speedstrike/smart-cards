@@ -27,6 +27,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'create_screen.dart';
 import 'results_screen.dart';
 import 'account_screen.dart';
+import 'edit_screen.dart';
 
 import '../constants.dart';
 import '../flashcard_deck.dart';
@@ -91,6 +92,16 @@ class _HomeScreenState extends State<HomeScreen> {
         )
       )
     );
+  }
+
+  Future<void> _editDeck(FlashcardDeck deck) async {
+    final changed = await Navigator.of(context).push(
+      CupertinoPageRoute(
+        builder: (context) => EditScreen(deck: deck)
+      )
+    );
+
+    if (changed == true) _fetchDecks();
   }
 
   String getGreeting() {
@@ -180,9 +191,30 @@ class _HomeScreenState extends State<HomeScreen> {
                     )
                   )
                 else
-                  ..._decks.map((deck) => FlashcardTile(
-                    deck: deck,
-                    onTap: () => _openDeck(deck)
+                  ..._decks.map((deck) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: FlashcardTile(
+                            deck: deck,
+                            onTap: () => _openDeck(deck)
+                          )
+                        ),
+                        const SizedBox(width: 8),
+                        CupertinoButton(
+                          padding: EdgeInsets.zero,
+                          minimumSize: Size(0.0, 0.0),
+                          onPressed: () => _editDeck(deck),
+                          child: const Icon(
+                            CupertinoIcons.pencil_circle,
+                            color: CupertinoColors.activeBlue,
+                            size: 30
+                          )
+                        )
+                      ]
+                    )
                   )),
                 SizedBox(height: 80)
               ]

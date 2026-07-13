@@ -21,9 +21,11 @@
 // SOFTWARE.
 import 'package:flutter/cupertino.dart';
 
-import 'package:supabase_flutter/supabase_flutter.dart';
-
+import 'dart:io';
 import 'dart:math';
+
+import 'package:share_plus/share_plus.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../constants.dart';
 import '../services/openrouter.dart';
@@ -37,7 +39,7 @@ class FlashcardView extends StatefulWidget {
     super.key,
     required this.flashcard,
     required this.index,
-    required this.total
+    required this.total,
   });
 
   @override
@@ -99,7 +101,7 @@ class _FlashcardViewState extends State<FlashcardView> with SingleTickerProvider
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: isBack? [
-                      CupertinoColors.systemOrange, 
+                      CupertinoColors.systemOrange,
                       CupertinoColors.systemPink
                     ] : [
                       CupertinoColors.activeBlue,
@@ -122,7 +124,7 @@ class _FlashcardViewState extends State<FlashcardView> with SingleTickerProvider
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      isBack ? 'Answer' : 'Question',
+                      isBack? 'Answer' : 'Question',
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -131,8 +133,7 @@ class _FlashcardViewState extends State<FlashcardView> with SingleTickerProvider
                       )
                     ),
                     Center(
-                      child: Text(
-                        isBack? widget.flashcard.answer : widget.flashcard.question,
+                      child: Text(isBack? widget.flashcard.answer : widget.flashcard.question,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 24,
@@ -169,7 +170,7 @@ class ResultsScreen extends StatefulWidget {
     super.key,
     required this.flashcards,
     required this.title,
-    this.readOnly = false
+    this.readOnly = false,
   });
 
   @override
@@ -180,6 +181,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
   late PageController _pageController;
   int _currentIndex = 0;
   bool _isSaving = false;
+  bool _isSharing = false;
 
   @override
   void initState() {
@@ -197,6 +199,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
     setState(() => _isSaving = true);
     final client = Supabase.instance.client;
     final userId = client.auth.currentUser?.id;
+
     if (userId == null) {
       if (!mounted) return;
       showCupertinoDialog(
@@ -216,10 +219,10 @@ class _ResultsScreenState extends State<ResultsScreen> {
       setState(() => _isSaving = false);
       return;
     }
+
     try {
       final deck = await client
-        .from('decks')
-        .insert({
+        .from('decks').insert({
           'user_id': userId,
           'title': widget.title,
           'card_count': widget.flashcards.length
@@ -227,14 +230,12 @@ class _ResultsScreenState extends State<ResultsScreen> {
 
       await client
         .from('flashcards')
-        .insert(
-          widget.flashcards.map((f) => {
-            'deck_id': deck['id'],
-            'user_id': userId,
-            'question': f.question,
-            'answer': f.answer
-          }).toList(),
-        );
+        .insert(widget.flashcards.map((f) => {
+          'deck_id': deck['id'],
+          'user_id': userId,
+          'question': f.question,
+          'answer': f.answer
+        }).toList());
 
       if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
     }
@@ -275,6 +276,112 @@ class _ResultsScreenState extends State<ResultsScreen> {
     finally {
       if (mounted) setState(() => _isSaving = false);
     }
+  }
+
+  String _escapeCsvField(String value) {
+    final escaped = value.replaceAll('"', '""');
+    return '"$escaped"';
+  }
+
+  String _buildShareText() {
+    final buffer = StringBuffer();
+    buffer.writeln(widget.title);
+    buffer.writeln('${widget.flashcards.length} cards');
+    buffer.writeln();
+
+    for (var i = 0; i < widget.flashcards.length; i++) {
+      final card = widget.flashcards[i];
+      buffer.writeln('${i + 1}. Q: ${card.question}');
+      buffer.writeln('   A: ${card.answer}');
+      if (i < widget.flashcards.length - 1) {
+        buffer.writeln();
+      }
+    }
+
+    return buffer.toString();
+  }
+
+  String _buildCsv() {
+    final buffer = StringBuffer();
+    buffer.writeln('question,answer');
+
+    for (final card in widget.flashcards) {
+      buffer.writeln(
+        '${_escapeCsvField(card.question)},${_escapeCsvField(card.answer)}',
+      );
+    }
+
+    return buffer.toString();
+  }
+
+  Future<void> _shareDeck() async {
+    setState(() => _isSharing = true);
+
+    try {
+      await SharePlus.instance.share(
+        ShareParams(text: _buildShareText(), subject: widget.title),
+      );
+    }
+    finally {
+      if (mounted) setState(() => _isSharing = false);
+    }
+  }
+
+  Future<void> _exportDeckCsv() async {
+    setState(() => _isSharing = true);
+
+    try {
+      final fileName = widget.title.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '_').replaceAll(RegExp(r'^_+|_+$'), '');
+      final safeFileName = fileName.isEmpty ? 'flashcards' : fileName;
+      final exportPath = '${Directory.systemTemp.path}/$safeFileName-flashcards.csv';
+      final exportFile = File(exportPath);
+
+      await exportFile.writeAsString(_buildCsv(), flush: true);
+
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(exportFile.path, mimeType: 'text/csv')],
+          subject: widget.title,
+          text: 'Exported flashcards from ${widget.title}'
+        )
+      );
+    }
+    finally {
+      if (mounted) setState(() => _isSharing = false);
+    }
+  }
+
+  Future<void> _showExportOptions() async {
+    if (_isSharing) return;
+
+    await showCupertinoModalPopup<void>(
+      context: context,
+      builder: (context) => CupertinoActionSheet(
+        title: Text(widget.title),
+        message: const Text(Constants.shareInstructions),
+        actions: [
+          CupertinoActionSheetAction(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await _shareDeck();
+            },
+            child: const Text(Constants.shareExportInstructions)
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await _exportDeckCsv();
+            },
+            child: const Text(Constants.shareCSVInstructions)
+          )
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          isDefaultAction: true,
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text(Constants.shareCancel)
+        )
+      )
+    );
   }
 
   @override
@@ -348,7 +455,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                         curve: Curves.easeInOut
                       );
                     } : null,
-                    child: const Text('Previous')
+                    child: const Text(Constants.previousCardButtonText)
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -370,20 +477,35 @@ class _ResultsScreenState extends State<ResultsScreen> {
                   ),
                   CupertinoButton(
                     onPressed: _currentIndex < widget.flashcards.length - 1? () {
-                       _pageController.nextPage(
-                         duration: const Duration(milliseconds: 300),
-                         curve: Curves.easeInOut
-                       );
+                      _pageController.nextPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut
+                      );
                     } : null,
-                    child: const Text('Next')
+                    child: const Text(Constants.nextCardButtonText)
                   )
                 ]
+              ),
+              const SizedBox(height: 8),
+              CupertinoButton(
+                onPressed: _isSharing? null : _showExportOptions,
+                child: _isSharing? const CupertinoActivityIndicator(radius: 12) : Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Icon(CupertinoIcons.square_arrow_up, size: 20),
+                    SizedBox(width: 8),
+                    Text(Constants.shareTite)
+                  ]
+                )
               ),
               if (!widget.readOnly) ...[
                 const SizedBox(height: 12),
                 CupertinoButton.filled(
-                  onPressed: _isSaving ? null : _saveDeck,
-                  child: _isSaving? const CupertinoActivityIndicator(color: CupertinoColors.white) : const Text('Save Deck')
+                  onPressed: _isSaving? null : _saveDeck,
+                  child: _isSaving? const CupertinoActivityIndicator(
+                    color: CupertinoColors.white,
+                  ) : const Text('Save Deck')
                 )
               ]
             ]

@@ -98,6 +98,24 @@ class Constants {
   static const String saveErrorMessage = 'Failed to save';
   static const String saveErrorExplanationText = 'Create an account to save your created decks!';
 
+  static const String previousCardButtonText = 'Previous';
+  static const String nextCardButtonText = 'Next';
+
+  static const String editDeckTitle = 'Edit deck';
+  static const String editDeckSubtitle = 'Update the title or cards in this deck';
+  static const String editTitlePlaceholder = 'Deck title';
+  static const String editAddCardButtonText = 'Add card';
+  static const String editSaveButtonText = 'Save changes';
+  static const String editEmptyFieldsError = 'Give your deck a title and at least one complete card.';
+  static const String editDeleteDeckDialogTitle = 'Delete Deck';
+  static const String editDeleteDeckDialogContent = 'This permanently deletes this deck and all its flashcards. This cannot be undone.';
+
+  static const String shareTite = 'Share / Export';
+  static const String shareInstructions = 'Share the deck text or export it as a CSV file.';
+  static const String shareExportInstructions = 'Share deck';
+  static const String shareCSVInstructions = 'Export CSV';
+  static const String shareCancel = 'Cancel';
+
   static const List<String> allowedFileExtensions = ['pdf', 'png', 'jpg', 'jpeg', 'heic', 'txt', 'dat'];
   
   static const Color background = Color(0xFF1C1C1E);
