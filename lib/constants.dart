@@ -24,14 +24,14 @@ import 'package:flutter/cupertino.dart';
 class Constants {
   static const String dbURL = 'https://ivinjnnepudqjvemmxaw.supabase.co';
   static const String dbKey = 'sb_publishable_pSSmUJyAMnvuevtFtjSn-Q_BrLWHWRV';
-  
+
   static const String morningGreeting = 'Good morning';
   static const String afternoonGreeting = 'Good afternoon';
   static const String eveningGreeting = 'Good evening';
   static const String nightGreeting = 'Good night';
 
   static const String mainSubtitle = 'Your recent flashcards';
-  static const String noRecentDecks = 'You don’t have any flashcards yet.\nTap + to create one.';
+  static const String noRecentDecks = 'You don\'t have any flashcards yet.\nTap + to create one.';
 
   static const String createDeckTitle = 'Create a new deck';
   static const String createDeckSubtitle = 'How do you want to create your deck?';
@@ -46,9 +46,16 @@ class Constants {
   static const String uploadInstructions = 'Select files to upload to generate flashcards';
   static const String scanInstructions = 'Scan your notes, assignment, or textbook page to create a deck';
   static const String aiInstructions = 'Enter a topic and number of flashcards to generate a deck using AI';
+  
+  static const String scanRecognizedTextLabel = 'Recognized text';
+  static const String scanRecognizingText = 'Reading text from image...';
+  static const String scanRetakeButton = 'Retake photo';
+  static const String scanExtractButton = 'Extract text';
+  static const String scanOcrPlaceholder = 'Extracted notes will appear here';
+  static const String scanOcrUnavailable = 'OCR is available on Android and iOS only.';
+  static const String scanOcrEmpty = 'No readable text was found. Try a clearer image.';
 
   static const String aiTopicPlaceholder = 'Flashcard topic';
-
   static const String flashcardCountPlaceholder = 'Number of flashcards';
   static const String continueButtonText = 'Generate flashcards';
 
@@ -78,7 +85,7 @@ class Constants {
   static const String accountButtonUpdateEmail = 'Update Email';
   static const String accountButtonUpdatePassword = 'Update Password';
   static const String accountButtonBack = 'Back';
-  
+
   static const String errorEmptyCredentials = 'Please enter your email and password.';
   static const String errorGeneric = 'Something went wrong. Please try again.';
   static const String errorEmptyEmailReset = 'Enter your email address first.';
@@ -87,7 +94,7 @@ class Constants {
   static const String errorPasswordMismatch = 'Passwords do not match.';
   static const String errorPasswordLength = 'Password must be at least 6 characters.';
   static const String errorDeleteAccount = 'Could not delete account. Please try again.';
-  
+
   static const String successAccountCreated = 'Account created!';
   static const String successConfirmEmail = 'Check your email to confirm your account.';
   static const String successWelcomeBack = 'Welcome back!';
@@ -117,7 +124,7 @@ class Constants {
   static const String shareCancel = 'Cancel';
 
   static const List<String> allowedFileExtensions = ['pdf', 'png', 'jpg', 'jpeg', 'heic', 'txt', 'dat'];
-  
+
   static const Color background = Color(0xFF1C1C1E);
   static const Color cardBackground = Color(0xFF2C2C2E);
   static const Color cardSubBackground = Color(0xFF222224);
