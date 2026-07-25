@@ -32,6 +32,20 @@ class Constants {
 
   static const String mainSubtitle = 'Your recent flashcards';
   static const String noRecentDecks = 'You don\'t have any flashcards yet.\nTap + to create one.';
+  static const String noMatchingDecks = 'No decks match your search or filters.';
+  static const String deckSearchPlaceholder = 'Search decks';
+  static const String deckFilterLabel = 'Filter';
+  static const String deckSortLabel = 'Sort';
+  static const String deckAllFilter = 'All';
+  static const String deckSmallFilter = 'Small';
+  static const String deckMediumFilter = 'Medium';
+  static const String deckLargeFilter = 'Large';
+  static const String deckNewestSort = 'Newest';
+  static const String deckOldestSort = 'Oldest';
+  static const String deckAZSort = 'A-Z';
+  static const String deckCardsHighSort = 'Cards ↓';
+  static const String deckCardsLowSort = 'Cards ↑';
+  static const String deckResetFilters = 'Reset filters';
 
   static const String createDeckTitle = 'Create a new deck';
   static const String createDeckSubtitle = 'How do you want to create your deck?';
@@ -46,13 +60,13 @@ class Constants {
   static const String uploadInstructions = 'Select files to upload to generate flashcards';
   static const String scanInstructions = 'Scan your notes, assignment, or textbook page to create a deck';
   static const String aiInstructions = 'Enter a topic and number of flashcards to generate a deck using AI';
-  
+
   static const String scanRecognizedTextLabel = 'Recognized text';
   static const String scanRecognizingText = 'Reading text from image...';
   static const String scanRetakeButton = 'Retake photo';
   static const String scanExtractButton = 'Extract text';
   static const String scanOcrPlaceholder = 'Extracted notes will appear here';
-  static const String scanOcrUnavailable = 'OCR is available on Android and iOS only.';
+  static const String scanOcrUnavailable ='OCR is available on Android and iOS only.';
   static const String scanOcrEmpty = 'No readable text was found. Try a clearer image.';
 
   static const String aiTopicPlaceholder = 'Flashcard topic';

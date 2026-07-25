@@ -24,16 +24,19 @@ class FlashcardDeck {
   final String id;
   final String title;
   final int cardCount;
+  final DateTime? createdAt;
 
   const FlashcardDeck({
     required this.id,
     required this.title,
-    required this.cardCount
+    required this.cardCount,
+    this.createdAt,
   });
 
   factory FlashcardDeck.fromMap(Map<String, dynamic> map) => FlashcardDeck(
     id: map['id'] as String,
     title: map['title'] as String,
-    cardCount: map['card_count'] as int
+    cardCount: map['card_count'] as int,
+    createdAt: DateTime.tryParse(map['created_at']?.toString() ?? ''),
   );
 }
