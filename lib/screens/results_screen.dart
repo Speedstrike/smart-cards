@@ -39,7 +39,7 @@ class FlashcardView extends StatefulWidget {
     super.key,
     required this.flashcard,
     required this.index,
-    required this.total,
+    required this.total
   });
 
   @override
@@ -103,7 +103,8 @@ class _FlashcardViewState extends State<FlashcardView> with SingleTickerProvider
                     colors: isBack? [
                       CupertinoColors.systemOrange,
                       CupertinoColors.systemPink
-                    ] : [
+                    ]
+                    : [
                       CupertinoColors.activeBlue,
                       CupertinoColors.systemPurple
                     ],
@@ -124,7 +125,7 @@ class _FlashcardViewState extends State<FlashcardView> with SingleTickerProvider
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      isBack? 'Answer' : 'Question',
+                      isBack ? 'Answer' : 'Question',
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -133,7 +134,10 @@ class _FlashcardViewState extends State<FlashcardView> with SingleTickerProvider
                       )
                     ),
                     Center(
-                      child: Text(isBack? widget.flashcard.answer : widget.flashcard.question,
+                      child: Text(
+                        isBack
+                            ? widget.flashcard.answer
+                            : widget.flashcard.question,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 24,
@@ -166,12 +170,7 @@ class ResultsScreen extends StatefulWidget {
   final String title;
   final bool readOnly;
 
-  const ResultsScreen({
-    super.key,
-    required this.flashcards,
-    required this.title,
-    this.readOnly = false,
-  });
+  const ResultsScreen({super.key, required this.flashcards, required this.title, this.readOnly = false});
 
   @override
   State<ResultsScreen> createState() => _ResultsScreenState();
@@ -179,6 +178,7 @@ class ResultsScreen extends StatefulWidget {
 
 class _ResultsScreenState extends State<ResultsScreen> {
   late PageController _pageController;
+  late List<Flashcard> _flashcards;
   int _currentIndex = 0;
   bool _isSaving = false;
   bool _isSharing = false;
@@ -187,6 +187,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
   void initState() {
     super.initState();
     _pageController = PageController();
+    _flashcards = widget.flashcards.toList();
   }
 
   @override
@@ -222,20 +223,29 @@ class _ResultsScreenState extends State<ResultsScreen> {
 
     try {
       final deck = await client
-        .from('decks').insert({
-          'user_id': userId,
-          'title': widget.title,
-          'card_count': widget.flashcards.length
-        }).select().single();
+          .from('decks')
+          .insert({
+            'user_id': userId,
+            'title': widget.title,
+            'card_count': _flashcards.length
+          })
+          .select()
+          .single();
 
       await client
-        .from('flashcards')
-        .insert(widget.flashcards.map((f) => {
-          'deck_id': deck['id'],
-          'user_id': userId,
-          'question': f.question,
-          'answer': f.answer
-        }).toList());
+          .from('flashcards')
+          .insert(
+            _flashcards
+                .map(
+                  (f) => {
+                    'deck_id': deck['id'],
+                    'user_id': userId,
+                    'question': f.question,
+                    'answer': f.answer
+                  }
+                )
+                .toList()
+          );
 
       if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
     }
@@ -286,14 +296,14 @@ class _ResultsScreenState extends State<ResultsScreen> {
   String _buildShareText() {
     final buffer = StringBuffer();
     buffer.writeln(widget.title);
-    buffer.writeln('${widget.flashcards.length} cards');
+    buffer.writeln('${_flashcards.length} cards');
     buffer.writeln();
 
-    for (var i = 0; i < widget.flashcards.length; i++) {
-      final card = widget.flashcards[i];
+    for (var i = 0; i < _flashcards.length; i++) {
+      final card = _flashcards[i];
       buffer.writeln('${i + 1}. Q: ${card.question}');
       buffer.writeln('   A: ${card.answer}');
-      if (i < widget.flashcards.length - 1) {
+      if (i < _flashcards.length - 1) {
         buffer.writeln();
       }
     }
@@ -305,9 +315,9 @@ class _ResultsScreenState extends State<ResultsScreen> {
     final buffer = StringBuffer();
     buffer.writeln('question,answer');
 
-    for (final card in widget.flashcards) {
+    for (final card in _flashcards) {
       buffer.writeln(
-        '${_escapeCsvField(card.question)},${_escapeCsvField(card.answer)}',
+        '${_escapeCsvField(card.question)},${_escapeCsvField(card.answer)}'
       );
     }
 
@@ -319,7 +329,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
 
     try {
       await SharePlus.instance.share(
-        ShareParams(text: _buildShareText(), subject: widget.title),
+        ShareParams(text: _buildShareText(), subject: widget.title)
       );
     }
     finally {
@@ -418,7 +428,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                 )
               ),
               Text(
-                '${widget.flashcards.length} cards',
+                '${_flashcards.length} cards',
                 style: const TextStyle(
                   fontSize: 16,
                   color: CupertinoColors.systemGrey
@@ -431,14 +441,14 @@ class _ResultsScreenState extends State<ResultsScreen> {
                   onPageChanged: (index) {
                     setState(() => _currentIndex = index);
                   },
-                  itemCount: widget.flashcards.length,
+                  itemCount: _flashcards.length,
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 20),
                       child: FlashcardView(
-                        flashcard: widget.flashcards[index],
+                        flashcard: _flashcards[index],
                         index: index,
-                        total: widget.flashcards.length
+                        total: _flashcards.length
                       )
                     );
                   }
@@ -467,7 +477,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                       borderRadius: BorderRadius.circular(8)
                     ),
                     child: Text(
-                      '${_currentIndex + 1}/${widget.flashcards.length}',
+                      '${_currentIndex + 1}/${_flashcards.length}',
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -476,7 +486,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                     )
                   ),
                   CupertinoButton(
-                    onPressed: _currentIndex < widget.flashcards.length - 1? () {
+                    onPressed: _currentIndex < _flashcards.length - 1? () {
                       _pageController.nextPage(
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.easeInOut
@@ -488,7 +498,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
               ),
               const SizedBox(height: 8),
               CupertinoButton(
-                onPressed: _isSharing? null : _showExportOptions,
+                onPressed: _isSharing ? null : _showExportOptions,
                 child: _isSharing? const CupertinoActivityIndicator(radius: 12) : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min,
@@ -502,9 +512,9 @@ class _ResultsScreenState extends State<ResultsScreen> {
               if (!widget.readOnly) ...[
                 const SizedBox(height: 12),
                 CupertinoButton.filled(
-                  onPressed: _isSaving? null : _saveDeck,
+                  onPressed: _isSaving ? null : _saveDeck,
                   child: _isSaving? const CupertinoActivityIndicator(
-                    color: CupertinoColors.white,
+                    color: CupertinoColors.white
                   ) : const Text('Save Deck')
                 )
               ]

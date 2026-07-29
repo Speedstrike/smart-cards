@@ -54,24 +54,17 @@ class Constants {
   static const String scanSubtitle = 'Take a picture of your notes, assignment, or textbook page, to generate flashcards';
   static const String uploadTitle = 'Upload files';
   static const String uploadSubtitle = 'Upload a PDF, image, or text file to create flashcards from its content';
-  static const String aiTitle = 'AI Generation';
-  static const String aiSubtitle = 'Use AI to generate flashcards from a topic or text you provide';
 
   static const String uploadInstructions = 'Select files to upload to generate flashcards';
   static const String scanInstructions = 'Scan your notes, assignment, or textbook page to create a deck';
-  static const String aiInstructions = 'Enter a topic and number of flashcards to generate a deck using AI';
 
   static const String scanRecognizedTextLabel = 'Recognized text';
   static const String scanRecognizingText = 'Reading text from image...';
   static const String scanRetakeButton = 'Retake photo';
   static const String scanExtractButton = 'Extract text';
   static const String scanOcrPlaceholder = 'Extracted notes will appear here';
-  static const String scanOcrUnavailable ='OCR is available on Android and iOS only.';
+  static const String scanOcrUnavailable = 'OCR is available on Android and iOS only.';
   static const String scanOcrEmpty = 'No readable text was found. Try a clearer image.';
-
-  static const String aiTopicPlaceholder = 'Flashcard topic';
-  static const String flashcardCountPlaceholder = 'Number of flashcards';
-  static const String continueButtonText = 'Generate flashcards';
 
   static const String accountCreateTitle = 'Create Account';
   static const String accountWelcomeTitle = 'Welcome Back';
@@ -136,6 +129,32 @@ class Constants {
   static const String shareExportInstructions = 'Share deck';
   static const String shareCSVInstructions = 'Export CSV';
   static const String shareCancel = 'Cancel';
+
+  static const String aiTitle = 'AI Generation';
+  static const String aiSubtitle = 'Use AI to generate flashcards from a topic or text you provide';
+  static const String aiInstructions = 'Enter a topic and number of flashcards to generate a deck using AI';
+  static const String aiSettingsTitle = 'Generation settings';
+  static const String aiSettingsSubtitle = 'Tune the style before generating cards.';
+  static const String aiDifficultyLabel = 'Difficulty';
+  static const String aiToneLabel = 'Tone';
+  static const String aiStyleLabel = 'Card style';
+  static const String aiAnswerLengthLabel = 'Answer length';
+  static const String aiSettingsDone = 'Done';
+  static const String aiTopicPlaceholder = 'Flashcard topic';
+  static const String flashcardCountPlaceholder = 'Number of flashcards';
+  static const String continueButtonText = 'Generate flashcards';
+  static const String generationDifficultyIntroductory = 'Introductory';
+  static const String generationDifficultyIntermediate = 'Intermediate';
+  static const String generationDifficultyAdvanced = 'Advanced';
+  static const String generationToneConcise = 'Concise';
+  static const String generationToneFriendly = 'Friendly';
+  static const String generationToneAcademic = 'Academic';
+  static const String generationStyleQA = 'Q&A';
+  static const String generationStyleCloze = 'Cloze';
+  static const String generationStyleMultipleChoice = 'Multiple choice';
+  static const String generationAnswerShort = 'Short';
+  static const String generationAnswerMedium = 'Medium';
+  static const String generationAnswerDetailed = 'Detailed';
 
   static const List<String> allowedFileExtensions = ['pdf', 'png', 'jpg', 'jpeg', 'heic', 'txt', 'dat'];
 

@@ -89,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final cards = (data as List).map((e) => Flashcard(
       question: e['question'] as String,
-      answer: e['answer'] as String,
+      answer: e['answer'] as String
     )).toList();
 
     if (!mounted) return;
@@ -127,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
         DeckFilter.all => true,
         DeckFilter.small => deck.cardCount <= 9,
         DeckFilter.medium => deck.cardCount >= 10 && deck.cardCount <= 24,
-        DeckFilter.large => deck.cardCount >= 25,
+        DeckFilter.large => deck.cardCount >= 25
       };
       return matchesSearch && matchesFilter;
     }).toList();
@@ -137,11 +137,11 @@ class _HomeScreenState extends State<HomeScreen> {
       switch (_selectedSort) {
         case DeckSort.newest:
           return (b.createdAt ?? unknownDate).compareTo(
-            a.createdAt ?? unknownDate,
+            a.createdAt ?? unknownDate
           );
         case DeckSort.oldest:
           return (a.createdAt ?? unknownDate).compareTo(
-            b.createdAt ?? unknownDate,
+            b.createdAt ?? unknownDate
           );
         case DeckSort.titleAZ:
           return a.title.toLowerCase().compareTo(b.title.toLowerCase());
@@ -201,8 +201,8 @@ class _HomeScreenState extends State<HomeScreen> {
         child: const Icon(
           CupertinoIcons.xmark_circle_fill,
           color: CupertinoColors.systemGrey2,
-          size: 18,
-        ),
+          size: 18
+        )
       ) : null,
       onChanged: (_) => setState(() {}),
       decoration: BoxDecoration(
@@ -285,7 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Icon(
                           _showControls? CupertinoIcons.chevron_up : CupertinoIcons.slider_horizontal_3,
                           size: 18,
-                          color: CupertinoColors.activeBlue,
+                          color: CupertinoColors.activeBlue
                         ),
                         const SizedBox(width: 8),
                         Text(
@@ -358,7 +358,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               DeckSort.cardsLowToHigh: Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                 child: Text(Constants.deckCardsLowSort, style: TextStyle(fontSize: 13))
-                              ),
+                              )
                             },
                             onValueChanged: (value) {
                               if (value != null) {
@@ -378,7 +378,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   crossFadeState: _showControls? CrossFadeState.showSecond : CrossFadeState.showFirst,
                   duration: const Duration(milliseconds: 180),
-                  sizeCurve: Curves.easeOut,
+                  sizeCurve: Curves.easeOut
                 ),
                 const SizedBox(height: 24),
                 if (_isLoading)
