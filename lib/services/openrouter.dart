@@ -28,7 +28,7 @@ import 'config.dart';
 
 enum CardDifficulty {
   introductory, intermediate, advanced
-  }
+}
 
 enum CardTone {
   concise, friendly, academic
@@ -43,13 +43,60 @@ enum AnswerLength {
 }
 
 class Flashcard {
+  final dynamic id;
   final String question;
   final String answer;
+  final int repetitions;
+  final int intervalDays;
+  final double easeFactor;
+  final DateTime? dueAt;
+  final DateTime? lastReviewedAt;
 
-  Flashcard({required this.question, required this.answer});
+  Flashcard({
+    this.id,
+    required this.question,
+    required this.answer,
+    this.repetitions = 0,
+    this.intervalDays = 0,
+    this.easeFactor = 2.5,
+    this.dueAt,
+    this.lastReviewedAt
+  });
 
   factory Flashcard.fromJson(Map<String, dynamic> json) {
     return Flashcard(question: json['question'] as String? ?? '', answer: json['answer'] as String? ?? '');
+  }
+
+  factory Flashcard.fromMap(Map<String, dynamic> map) {
+    return Flashcard(
+      id: map['id'],
+      question: map['question'] as String? ?? '',
+      answer: map['answer'] as String? ?? '',
+      repetitions: map['repetitions'] as int? ?? 0,
+      intervalDays: map['interval_days'] as int? ?? 0,
+      easeFactor: (map['ease_factor'] as num?)?.toDouble() ?? 2.5,
+      dueAt: DateTime.tryParse(map['due_at']?.toString() ?? ''),
+      lastReviewedAt: DateTime.tryParse(map['last_reviewed_at']?.toString() ?? '')
+    );
+  }
+
+  Flashcard copyWith({
+    int? repetitions,
+    int? intervalDays,
+    double? easeFactor,
+    DateTime? dueAt,
+    DateTime? lastReviewedAt
+  }) {
+    return Flashcard(
+      id: id,
+      question: question,
+      answer: answer,
+      repetitions: repetitions ?? this.repetitions,
+      intervalDays: intervalDays ?? this.intervalDays,
+      easeFactor: easeFactor ?? this.easeFactor,
+      dueAt: dueAt ?? this.dueAt,
+      lastReviewedAt: lastReviewedAt ?? this.lastReviewedAt
+    );
   }
 }
 

@@ -114,6 +114,16 @@ class Constants {
 
   static const String previousCardButtonText = 'Previous';
   static const String nextCardButtonText = 'Next';
+  static const String reviewAgainButtonText = 'Today';
+  static const String reviewHardButtonText = 'Tomorrow';
+  static const String reviewGoodButtonText = '5 days';
+  static const String reviewEasyButtonText = '7 days';
+  static const String reviewTitle = 'Spaced repetition';
+  static const String reviewSubtitle = 'Choose when this card should come back';
+  static const String reviewDueTodayText = 'Next review: today';
+  static const String reviewSavedText = 'Review saved';
+  static const String reviewUnsavedText = 'Save this deck to track review progress';
+  static const String reviewErrorText = 'Could not save review progress';
 
   static const String editDeckTitle = 'Edit deck';
   static const String editDeckSubtitle = 'Update the title or cards in this deck';

@@ -87,10 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _openDeck(FlashcardDeck deck) async {
     final data = await _supabase.from('flashcards').select().eq('deck_id', deck.id).order('id');
 
-    final cards = (data as List).map((e) => Flashcard(
-      question: e['question'] as String,
-      answer: e['answer'] as String
-    )).toList();
+    final cards = (data as List).map((e) => Flashcard.fromMap(e)).toList();
 
     if (!mounted) return;
 

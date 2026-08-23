@@ -182,6 +182,8 @@ class _ResultsScreenState extends State<ResultsScreen> {
   int _currentIndex = 0;
   bool _isSaving = false;
   bool _isSharing = false;
+  bool _isReviewSaving = false;
+  String? _reviewMessage;
 
   @override
   void initState() {
@@ -241,7 +243,11 @@ class _ResultsScreenState extends State<ResultsScreen> {
                     'deck_id': deck['id'],
                     'user_id': userId,
                     'question': f.question,
-                    'answer': f.answer
+                    'answer': f.answer,
+                    'repetitions': 0,
+                    'interval_days': 0,
+                    'ease_factor': 2.5,
+                    'due_at': DateTime.now().toUtc().toIso8601String()
                   }
                 )
                 .toList()
@@ -286,6 +292,128 @@ class _ResultsScreenState extends State<ResultsScreen> {
     finally {
       if (mounted) setState(() => _isSaving = false);
     }
+  }
+
+  bool _isDue(Flashcard card) {
+    final dueAt = card.dueAt;
+    if (dueAt == null) return true;
+    return !dueAt.isAfter(DateTime.now());
+  }
+
+  int get _dueCount {
+    return _flashcards.where(_isDue).length;
+  }
+
+  String _nextReviewLabel(Flashcard card) {
+    final dueAt = card.dueAt;
+    if (dueAt == null || _isDue(card)) return Constants.reviewDueTodayText;
+
+    final difference = dueAt.difference(DateTime.now()).inDays + 1;
+    if (difference <= 1) return 'Next review: tomorrow';
+    return 'Next review: in $difference days';
+  }
+
+  Flashcard _scheduleReview(Flashcard card, int quality) {
+    var repetitions = card.repetitions;
+    var easeFactor = card.easeFactor;
+    final intervalDays = switch (quality) {
+      1 => 0,
+      3 => 1,
+      4 => 5,
+      5 => 7,
+      _ => 1
+    };
+
+    if (quality < 3) {
+      repetitions = 0;
+    }
+    else {
+      repetitions += 1;
+      easeFactor += 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02);
+      if (easeFactor < 1.3) easeFactor = 1.3;
+    }
+
+    final now = DateTime.now();
+    return card.copyWith(
+      repetitions: repetitions,
+      intervalDays: intervalDays,
+      easeFactor: easeFactor,
+      dueAt: now.add(Duration(days: intervalDays)),
+      lastReviewedAt: now
+    );
+  }
+
+  Future<void> _markReview(int quality) async {
+    final reviewIndex = _currentIndex;
+    final card = _flashcards[reviewIndex];
+    if (card.id == null) {
+      setState(() => _reviewMessage = Constants.reviewUnsavedText);
+      return;
+    }
+
+    final updated = _scheduleReview(card, quality);
+    setState(() {
+      _isReviewSaving = true;
+      _reviewMessage = null;
+      _flashcards[reviewIndex] = updated;
+    });
+
+    try {
+      final userId = Supabase.instance.client.auth.currentUser?.id;
+      var query = Supabase.instance.client
+        .from('flashcards')
+        .update({
+          'repetitions': updated.repetitions,
+          'interval_days': updated.intervalDays,
+          'ease_factor': updated.easeFactor,
+          'due_at': updated.dueAt?.toUtc().toIso8601String(),
+          'last_reviewed_at': updated.lastReviewedAt?.toUtc().toIso8601String()
+        }).eq('id', card.id);
+
+      if (userId != null) {
+        query = query.eq('user_id', userId);
+      }
+
+      await query;
+
+      if (_currentIndex < _flashcards.length - 1) {
+        await _pageController.nextPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut
+        );
+      }
+
+      if (mounted) setState(() => _reviewMessage = Constants.reviewSavedText);
+    }
+    catch (e) {
+      if (mounted) {
+        setState(() {
+          _flashcards[reviewIndex] = card;
+          _reviewMessage = '${Constants.reviewErrorText} ${e.toString().replaceFirst('Exception: ', '')}';
+        });
+      }
+    }
+    finally {
+      if (mounted) setState(() => _isReviewSaving = false);
+    }
+  }
+
+  Widget _reviewButton(String label, Color color, int quality) {
+    return Expanded(
+      child: CupertinoButton(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        color: color.withValues(alpha: 0.18),
+        onPressed: _isReviewSaving ? null : () => _markReview(quality),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: color,
+            fontSize: 13,
+            fontWeight: FontWeight.w700
+          )
+        )
+      )
+    );
   }
 
   String _escapeCsvField(String value) {
@@ -428,7 +556,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                 )
               ),
               Text(
-                '${_flashcards.length} cards',
+                widget.readOnly ? '${_flashcards.length} cards - $_dueCount due' : '${_flashcards.length} cards',
                 style: const TextStyle(
                   fontSize: 16,
                   color: CupertinoColors.systemGrey
@@ -455,6 +583,73 @@ class _ResultsScreenState extends State<ResultsScreen> {
                 )
               ),
               const SizedBox(height: 16),
+              if (widget.readOnly) ...[
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Constants.cardBackground,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: Constants.border)
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Text(
+                        Constants.reviewTitle,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: CupertinoColors.activeBlue,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold
+                        )
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        Constants.reviewSubtitle,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: CupertinoColors.systemGrey,
+                          fontSize: 12
+                        )
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        _nextReviewLabel(_flashcards[_currentIndex]),
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: CupertinoColors.systemGrey,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600
+                        )
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          _reviewButton(Constants.reviewAgainButtonText, CupertinoColors.systemRed, 1),
+                          const SizedBox(width: 8),
+                          _reviewButton(Constants.reviewHardButtonText, CupertinoColors.systemOrange, 3),
+                          const SizedBox(width: 8),
+                          _reviewButton(Constants.reviewGoodButtonText, CupertinoColors.activeBlue, 4),
+                          const SizedBox(width: 8),
+                          _reviewButton(Constants.reviewEasyButtonText, CupertinoColors.systemGreen, 5)
+                        ]
+                      ),
+                      if (_reviewMessage != null) ...[
+                        const SizedBox(height: 10),
+                        Text(
+                          _reviewMessage!,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: _reviewMessage!.startsWith(Constants.reviewErrorText) ? CupertinoColors.systemRed : CupertinoColors.systemGrey,
+                            fontSize: 12
+                          )
+                        )
+                      ]
+                    ]
+                  )
+                ),
+                const SizedBox(height: 8)
+              ],
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
